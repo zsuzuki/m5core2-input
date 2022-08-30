@@ -1,7 +1,7 @@
 #include <BleMouse.h>
 #include <M5Unified.h>
 
-BleMouse bleMouse;
+BleMouse bleMouse("M5 Core2 Trackpad", "Suzuki Yoshinori", 100);
 
 namespace {
 
@@ -152,6 +152,8 @@ void loop() {
 
   CursorMode();
 
+  static int battLv = -1;
+
   bool bleOn = bleMouse.isConnected();
   if (bleOn) {
     if (cursor.touchClick) {
@@ -165,19 +167,19 @@ void loop() {
     }
   }
 
+  //
   auto &gfx = M5.Display;
   gfx.startWrite();
   gfx.setTextColor(TFT_WHITE);
 
   static bool oldBleOn = false;
   if (oldBleOn != bleOn) {
-    gfx.fillRect(10, 2, 12 * 5, 24, TFT_BLACK);
-    gfx.drawString(bleOn ? "BLE ON" : "---", 10, 2);
+    gfx.fillRect(5, 0, 12 * 6, 24, TFT_BLACK);
+    gfx.drawString(bleOn ? "BLE ON" : "---", 5, 0);
     oldBleOn = bleOn;
   }
 
   // battery
-  static int battLv = -1;
   int newBattLv = M5.Power.getBatteryLevel();
   if (newBattLv != battLv) {
     battLv = newBattLv;
@@ -187,6 +189,7 @@ void loop() {
     if (!M5.Power.isCharging()) {
       col = battLv < 20 ? TFT_RED : TFT_WHITE;
     }
+    gfx.fillRect(bL + 3, 5, 100, 10, TFT_BLACK);
     gfx.fillRect(bL + 3, 5, battLv, 10, col);
   }
 
